@@ -70,7 +70,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult UnRegister(long id)
+        public IActionResult Delete(long id)
         {
             Student student = _studentRepository.GetById(id);
             if (student == null)
