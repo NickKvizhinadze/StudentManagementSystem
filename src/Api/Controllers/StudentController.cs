@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Dtos;
+using Logic.Dtos;
 using Logic.Students;
 using Logic.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -14,36 +14,22 @@ namespace Api.Controllers
         private readonly UnitOfWork _unitOfWork;
         private readonly StudentRepository _studentRepository;
         private readonly CourseRepository _courseRepository;
+        private readonly Messages _messages;
 
-        public StudentController(UnitOfWork unitOfWork)
+        public StudentController(UnitOfWork unitOfWork, Messages messages)
         {
             _unitOfWork = unitOfWork;
             _studentRepository = new StudentRepository(unitOfWork);
             _courseRepository = new CourseRepository(unitOfWork);
+            _messages = messages;
         }
 
         [HttpGet]
         public IActionResult GetList(string enrolled, int? number)
         {
-            IReadOnlyList<Student> students = _studentRepository.GetList(enrolled, number);
-            List<StudentDto> dtos = students.Select(x => ConvertToDto(x)).ToList();
+            var query = new GetStudentsQuery(enrolled, number);
+            var dtos = _messages.Dispatch(query);
             return Ok(dtos);
-        }
-
-        private StudentDto ConvertToDto(Student student)
-        {
-            return new StudentDto
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Email = student.Email,
-                Course1 = student.FirstEnrollment?.Course?.Name,
-                Course1Grade = student.FirstEnrollment?.Grade.ToString(),
-                Course1Credits = student.FirstEnrollment?.Course?.Credits,
-                Course2 = student.SecondEnrollment?.Course?.Name,
-                Course2Grade = student.SecondEnrollment?.Grade.ToString(),
-                Course2Credits = student.SecondEnrollment?.Course?.Credits,
-            };
         }
 
         [HttpPost]
@@ -154,14 +140,9 @@ namespace Api.Controllers
         [HttpPut("{id}")]
         public IActionResult EditPersonalInfo(long id, [FromBody] StudentPersonalInfoDto dto)
         {
-            var command = new EditPersonalInfoCommand
-            {
-                Id = id,
-                Email = dto.Email,
-                Name = dto.Name
-            };
-            var hand = new EditPersonalInfoCommandHandler(_unitOfWork);
-            var result = hand.Handle(command);
+            var command = new EditPersonalInfoCommand(id, dto.Email, dto.Name);
+
+            var result = _messages.Dispatch(command);
 
             return result.IsSuccess ? Ok() : Error(result.Error);
         }
