@@ -35,116 +35,53 @@ namespace Api.Controllers
         [HttpPost]
         public IActionResult Register([FromBody] NewStudentDto dto)
         {
-            var student = new Student(dto.Name, dto.Email);
-
-            if (dto.Course1 != null && dto.Course1Grade != null)
-            {
-                Course course = _courseRepository.GetByName(dto.Course1);
-                student.Enroll(course, Enum.Parse<Grade>(dto.Course1Grade));
-            }
-
-            if (dto.Course2 != null && dto.Course2Grade != null)
-            {
-                Course course = _courseRepository.GetByName(dto.Course2);
-                student.Enroll(course, Enum.Parse<Grade>(dto.Course2Grade));
-            }
-
-            _studentRepository.Save(student);
-            _unitOfWork.Commit();
-
-            return Ok();
+            var result = _messages.Dispatch(new RegisterStudentCommand(
+                     dto.Name,
+                     dto.Email,
+                     dto.Course1,
+                     dto.Course1Grade,
+                     dto.Course2,
+                     dto.Course2Grade
+                     )
+                 );
+            return FromResult(result);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public IActionResult UnRegister(long id)
         {
-            Student student = _studentRepository.GetById(id);
-            if (student == null)
-                return Error($"No student found for Id {id}");
-
-            _studentRepository.Delete(student);
-            _unitOfWork.Commit();
-
-            return Ok();
+            var result = _messages.Dispatch(new UnRegisterStudentCommand(id));
+            return FromResult(result);
         }
 
         [HttpPost("{id}/enrollments")]
         public IActionResult Enroll(long id, [FromBody] StudentEnrollmentDto dto)
         {
-            Student student = _studentRepository.GetById(id);
-            if (student == null)
-                return Error($"No student found for Id {id}");
-
-            var course = _courseRepository.GetByName(dto.Course);
-            if (course == null)
-                return Error($"Course is incorrect: '{dto.Course}");
-
-            if (!Enum.TryParse(dto.Grade, out Grade grade))
-                return Error($"Grade is incorrect: '{dto.Grade}'");
-
-            student.Enroll(course, grade);
-
-            _unitOfWork.Commit();
-
-            return Ok();
+            var result = _messages.Dispatch(new EnrollStudentCommand(id, dto.Course, dto.Grade));
+            return FromResult(result);
         }
 
         [HttpPut("{id}/enrollments/{enrollmentNumber}")]
         public IActionResult Transfer(long id, int enrollmentNumber, [FromBody] StudentTransferDto dto)
         {
-            Student student = _studentRepository.GetById(id);
-            if (student == null)
-                return Error($"No student found for Id {id}");
-
-            var course = _courseRepository.GetByName(dto.Course);
-            if (course == null)
-                return Error($"Course is incorrect: '{dto.Course}");
-
-            if (!Enum.TryParse(dto.Grade, out Grade grade))
-                return Error($"Grade is incorrect: '{dto.Grade}'");
-
-            var enrollment = student.GetEnrollment(enrollmentNumber);
-
-            if (enrollment == null)
-                return Error($"No enrollment found with number: '{enrollmentNumber}'");
-
-            enrollment.Update(course, grade);
-
-            _unitOfWork.Commit();
-
-            return Ok();
+            var result = _messages.Dispatch(new TransferStudentCommand(id, enrollmentNumber, dto.Course, dto.Grade));
+            return FromResult(result);
         }
 
         [HttpPost("{id}/enrollments/{enrollmentNumber}/deletion")]
         public IActionResult Disenrollment(long id, int enrollmentNumber, [FromBody] StudentDisenrollmentDto dto)
         {
-            Student student = _studentRepository.GetById(id);
-            if (student == null)
-                return Error($"No student found for Id {id}");
-
-            if (string.IsNullOrWhiteSpace(dto.Comment))
-                return Error("Disenrollment comment is required");
-
-            var enrollment = student.GetEnrollment(enrollmentNumber);
-
-            if (enrollment == null)
-                return Error($"No enrollment found with number: '{enrollmentNumber}'");
-
-            student.RemoveEnrollment(enrollment, dto.Comment);
-
-            _unitOfWork.Commit();
-
-            return Ok();
+            var result = _messages.Dispatch(new DisEnrollStudentCommand(id, enrollmentNumber, dto.Comment));
+            return FromResult(result);
         }
 
         [HttpPut("{id}")]
         public IActionResult EditPersonalInfo(long id, [FromBody] StudentPersonalInfoDto dto)
         {
-            var command = new EditPersonalInfoCommand(id, dto.Email, dto.Name);
+            var command = new EditPersonalInfoCommand(id, dto.Name, dto.Email);
 
             var result = _messages.Dispatch(command);
-
-            return result.IsSuccess ? Ok() : Error(result.Error);
+            return FromResult(result);
         }
 
     }

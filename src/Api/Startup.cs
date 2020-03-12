@@ -1,4 +1,5 @@
 ﻿using Api.Utils;
+using Logic.Decorators;
 using Logic.Dtos;
 using Logic.Students;
 using Logic.Utils;
@@ -24,7 +25,16 @@ namespace Api
 
             services.AddSingleton(new SessionFactory(Configuration["ConnectionString"]));
             services.AddTransient<UnitOfWork>();
-            services.AddTransient<ICommandHandler<EditPersonalInfoCommand>, EditPersonalInfoCommandHandler>();
+            services.AddTransient<ICommandHandler<EditPersonalInfoCommand>>(provider =>
+            new AuditLogDecorator<EditPersonalInfoCommand>(
+            new DatabaseRetryDecorator<EditPersonalInfoCommand>
+                (new EditPersonalInfoCommandHandler(provider.GetService<SessionFactory>()))
+            ));
+            services.AddTransient<ICommandHandler<RegisterStudentCommand>, RegisterStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<UnRegisterStudentCommand>, UnRegisterStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<EnrollStudentCommand>, EnrollStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<DisEnrollStudentCommand>, DisEnrollStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<TransferStudentCommand>, TransferStudentCommandHandler>();
             services.AddTransient<IQueryHandler<GetStudentsQuery, List<StudentDto>>, GetStudentsQueryHandler>();
             services.AddSingleton<Messages>();
         }
