@@ -28,7 +28,7 @@ namespace Logic.AppServices
         public string Course2 { get; }
         public string Course2Grade { get; }
 
-        internal class RegisterStudentCommandHandler : ICommandHandler<RegisterStudentCommand>
+        public class RegisterStudentCommandHandler : ICommandHandler<RegisterStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 

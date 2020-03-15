@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Logic.AppServices;
 using Logic.Dtos;
 using Logic.Students;
 using Logic.Utils;
@@ -11,16 +12,10 @@ namespace Api.Controllers
     [Route("api/students")]
     public sealed class StudentController : BaseController
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly StudentRepository _studentRepository;
-        private readonly CourseRepository _courseRepository;
         private readonly Messages _messages;
 
-        public StudentController(UnitOfWork unitOfWork, Messages messages)
+        public StudentController(Messages messages)
         {
-            _unitOfWork = unitOfWork;
-            _studentRepository = new StudentRepository(unitOfWork);
-            _courseRepository = new CourseRepository(unitOfWork);
             _messages = messages;
         }
 

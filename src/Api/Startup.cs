@@ -1,4 +1,5 @@
 ﻿using Api.Utils;
+using Logic.AppServices;
 using Logic.Decorators;
 using Logic.Dtos;
 using Logic.Students;
@@ -23,19 +24,22 @@ namespace Api
         {
             services.AddMvc();
 
-            services.AddSingleton(new SessionFactory(Configuration["ConnectionString"]));
+            var connectionString = new ConnectionString(Configuration["ConnectionString"]);
+            services.AddSingleton(connectionString);
+
+            services.AddSingleton<SessionFactory>();
             services.AddTransient<UnitOfWork>();
             services.AddTransient<ICommandHandler<EditPersonalInfoCommand>>(provider =>
             new AuditLogDecorator<EditPersonalInfoCommand>(
             new DatabaseRetryDecorator<EditPersonalInfoCommand>
-                (new EditPersonalInfoCommandHandler(provider.GetService<SessionFactory>()))
+                (new EditPersonalInfoCommand.EditPersonalInfoCommandHandler(provider.GetService<SessionFactory>()))
             ));
-            services.AddTransient<ICommandHandler<RegisterStudentCommand>, RegisterStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<UnRegisterStudentCommand>, UnRegisterStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<EnrollStudentCommand>, EnrollStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<DisEnrollStudentCommand>, DisEnrollStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<TransferStudentCommand>, TransferStudentCommandHandler>();
-            services.AddTransient<IQueryHandler<GetStudentsQuery, List<StudentDto>>, GetStudentsQueryHandler>();
+            services.AddTransient<ICommandHandler<RegisterStudentCommand>, RegisterStudentCommand.RegisterStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<UnRegisterStudentCommand>, UnRegisterStudentCommand.UnRegisterStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<EnrollStudentCommand>, EnrollStudentCommand.EnrollStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<DisEnrollStudentCommand>, DisEnrollStudentCommand.DisEnrollStudentCommandHandler>();
+            services.AddTransient<ICommandHandler<TransferStudentCommand>, TransferStudentCommand.TransferStudentCommandHandler>();
+            services.AddTransient<IQueryHandler<GetStudentsQuery, List<StudentDto>>, GetStudentsQuery.GetStudentsQueryHandler>();
             services.AddSingleton<Messages>();
         }
 

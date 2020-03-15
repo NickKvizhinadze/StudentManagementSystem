@@ -17,7 +17,7 @@ namespace Logic.AppServices
         public string Name { get; }
         public string Email { get; }
 
-        internal class EditPersonalInfoCommandHandler : ICommandHandler<EditPersonalInfoCommand>
+        public class EditPersonalInfoCommandHandler : ICommandHandler<EditPersonalInfoCommand>
         {
             private readonly SessionFactory _sessionFactory;
 

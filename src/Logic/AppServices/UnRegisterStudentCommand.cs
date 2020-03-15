@@ -14,7 +14,7 @@ namespace Logic.AppServices
 
         public long Id { get; }
 
-        internal class UnRegisterStudentCommandHandler : ICommandHandler<UnRegisterStudentCommand>
+        public class UnRegisterStudentCommandHandler : ICommandHandler<UnRegisterStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 

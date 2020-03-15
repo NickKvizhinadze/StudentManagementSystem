@@ -23,7 +23,7 @@ namespace Logic.AppServices
         public string Grade { get; }
 
 
-        internal class EnrollStudentCommandHandler : ICommandHandler<EnrollStudentCommand>
+        public class EnrollStudentCommandHandler : ICommandHandler<EnrollStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 
