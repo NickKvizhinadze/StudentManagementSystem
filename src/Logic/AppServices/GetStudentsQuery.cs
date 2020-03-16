@@ -19,7 +19,7 @@ namespace Logic.AppServices
         public string EnrolledIn { get; }
         public int? NumberOfCourses { get; }
 
-        public class GetStudentsQueryHandler : IQueryHandler<GetStudentsQuery, List<StudentDto>>
+        internal class GetStudentsQueryHandler : IQueryHandler<GetStudentsQuery, List<StudentDto>>
         {
             private readonly QueriesConnectionString _connectionString;
 
@@ -31,7 +31,7 @@ namespace Logic.AppServices
             public List<StudentDto> Handle(GetStudentsQuery query)
             {
                 string sql = @"
-                        SELECT s.StudentID, s.Name, s.Email,
+                        SELECT s.StudentID Id, s.Name, s.Email,
 	                        s.FirstCourseName Course1, s.FirstCourseCredits Course1Credits, s.FirstCourseGrade Course1Grade,
 	                        s.SecondCourseName Course2, s.SecondCourseCredits Course2Credits, s.SecondCourseGrade Course2Grade
                         FROM dbo.Student s

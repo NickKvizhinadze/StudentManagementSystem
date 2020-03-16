@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Logic.Decorators;
 using Logic.Students;
 using Logic.Utils;
 
@@ -17,7 +18,9 @@ namespace Logic.AppServices
         public string Name { get; }
         public string Email { get; }
 
-        public class EditPersonalInfoCommandHandler : ICommandHandler<EditPersonalInfoCommand>
+        [DatabaseRetry]
+        [AuditLog]
+        internal class EditPersonalInfoCommandHandler : ICommandHandler<EditPersonalInfoCommand>
         {
             private readonly SessionFactory _sessionFactory;
 

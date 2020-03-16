@@ -31,18 +31,9 @@ namespace Api
 
             services.AddSingleton<SessionFactory>();
             services.AddTransient<UnitOfWork>();
-            services.AddTransient<ICommandHandler<EditPersonalInfoCommand>>(provider =>
-            new AuditLogDecorator<EditPersonalInfoCommand>(
-            new DatabaseRetryDecorator<EditPersonalInfoCommand>
-                (new EditPersonalInfoCommand.EditPersonalInfoCommandHandler(provider.GetService<SessionFactory>()))
-            ));
-            services.AddTransient<ICommandHandler<RegisterStudentCommand>, RegisterStudentCommand.RegisterStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<UnRegisterStudentCommand>, UnRegisterStudentCommand.UnRegisterStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<EnrollStudentCommand>, EnrollStudentCommand.EnrollStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<DisEnrollStudentCommand>, DisEnrollStudentCommand.DisEnrollStudentCommandHandler>();
-            services.AddTransient<ICommandHandler<TransferStudentCommand>, TransferStudentCommand.TransferStudentCommandHandler>();
-            services.AddTransient<IQueryHandler<GetStudentsQuery, List<StudentDto>>, GetStudentsQuery.GetStudentsQueryHandler>();
             services.AddSingleton<Messages>();
+
+            services.AddHandlers();
         }
 
         public void Configure(IApplicationBuilder app)

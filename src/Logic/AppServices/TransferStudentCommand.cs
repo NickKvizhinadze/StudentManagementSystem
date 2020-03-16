@@ -20,7 +20,7 @@ namespace Logic.AppServices
         public string Course { get; }
         public string Grade { get; }
 
-        public class TransferStudentCommandHandler : ICommandHandler<TransferStudentCommand>
+        internal class TransferStudentCommandHandler : ICommandHandler<TransferStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 

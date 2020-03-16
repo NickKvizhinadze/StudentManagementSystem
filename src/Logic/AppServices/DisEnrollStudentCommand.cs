@@ -18,7 +18,7 @@ namespace Logic.AppServices
         public string Comment { get; }
 
 
-        public class DisEnrollStudentCommandHandler : ICommandHandler<DisEnrollStudentCommand>
+        internal class DisEnrollStudentCommandHandler : ICommandHandler<DisEnrollStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 

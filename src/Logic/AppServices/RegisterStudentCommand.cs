@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Logic.Decorators;
 using Logic.Students;
 using Logic.Utils;
 using System;
@@ -28,7 +29,8 @@ namespace Logic.AppServices
         public string Course2 { get; }
         public string Course2Grade { get; }
 
-        public class RegisterStudentCommandHandler : ICommandHandler<RegisterStudentCommand>
+        [AuditLog]
+        internal class RegisterStudentCommandHandler : ICommandHandler<RegisterStudentCommand>
         {
             private readonly UnitOfWork _unitOfWork;
 
