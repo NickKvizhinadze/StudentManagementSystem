@@ -24,8 +24,10 @@ namespace Api
         {
             services.AddMvc();
 
-            var connectionString = new ConnectionString(Configuration["ConnectionString"]);
+            var connectionString = new CommandsConnectionString(Configuration["ConnectionString"]);
             services.AddSingleton(connectionString);
+            var quriesConnectionString = new QueriesConnectionString(Configuration["QueriesConnectionString"]);
+            services.AddSingleton(quriesConnectionString);
 
             services.AddSingleton<SessionFactory>();
             services.AddTransient<UnitOfWork>();
